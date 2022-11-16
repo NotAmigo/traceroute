@@ -32,22 +32,20 @@ def make_request(seq, payload):
     return header + payload
 
 
-def test_traceroute(seq, host):
+def test_traceroute(host, seq=0):
     for i in range(1, 31):
-        s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_ICMP)
+        s = socket.socket(socket.AF_INET, socket.SOCK_RAW, proto=socket.IPPROTO_ICMP)
         s.setsockopt(socket.IPPROTO_IP, socket.IP_TTL, i)
-        s.bind(('0.0.0.0', 0))
-        req = make_request(seq+i, PAYLOAD.encode('utf-8'))
-        sock_destination = socket.getaddrinfo(
-            host=host,
-            port=None,
-            family=socket.AF_INET,
-            type=socket.SOCK_RAW)[0][4]
+        req = make_request(seq, PAYLOAD.encode('utf-8'))
+        sock_destination = socket.getaddrinfo(host=host, port=None, family=socket.AF_INET, type=socket.SOCK_DGRAM)[0][4]
         s.sendto(req, sock_destination)
         data, addr = None, None
+        print(f'{i}')
         while not data:
             data, addr = s.recvfrom(4096)
+        print(data)
         host = addr[0]
 
 
-test_traceroute(3600, 'google.com')
+seq = int(input())
+test_traceroute('google.com')
