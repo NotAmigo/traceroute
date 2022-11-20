@@ -30,7 +30,8 @@ NETWORK_ROUTER_ADMIN_LOGIN = '192.168.1.120'
 @click.option('--repeat', default=3, help='Requests per TTL')
 @click.option('--timeout', default=3, help='Timeout for each request')
 @click.option('--interval', default=0, help='Interval between requests')
-def main(type, destination, source, id, seq, len, payload, tcp_port, max_ttl, repeat, timeout, interval):
+@click.option('--debug', is_flag=True, help='Debug mode')
+def main(type, destination, source, id, seq, len, payload, tcp_port, max_ttl, repeat, timeout, interval, debug):
     if type == 'ICMP':
         packet = ICMPPacket(destination, id, seq, source, len, payload)
     elif type == 'TCP':
@@ -39,7 +40,7 @@ def main(type, destination, source, id, seq, len, payload, tcp_port, max_ttl, re
         print('Wrong type')
         return
     traceroute = Traceroute(destination, packet, max_ttl,
-                            repeat, timeout, interval)
+                            repeat, timeout, interval, debug)
     traceroute.run()
 
 
